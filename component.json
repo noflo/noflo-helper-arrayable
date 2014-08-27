@@ -2,7 +2,7 @@
   "name": "noflo-helper-arrayable",
   "description": "noflo-canvas and noflo-motion use similar semantics, where component can make one or many",
   "author": "Forrest Oliphant <http://forresto.com/>",
-  "repo": "noflo/noflo-helper-arrayable",
+  "repository": "noflo/noflo-helper-arrayable",
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
@@ -11,8 +11,9 @@
   "remotes": [
     "https://raw.githubusercontent.com"
   ],
-  "main": "lib/ArrayableHelper.coffee",
+  "main": "index.js",
   "scripts": [
+    "index.js",
     "lib/ArrayableHelper.coffee"
   ]
 }
