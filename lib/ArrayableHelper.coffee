@@ -72,6 +72,8 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
             obj[name] = prop
         arr.push obj
       return arr
+      
+  c.expandToArray = expandToArray
 
   # Set up in ports
   for own name, port of ports
