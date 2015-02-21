@@ -32,10 +32,6 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
       if out
         c.outPorts[type].send out
 
-  # FIXME this it kinda whack
-  # Autosend on attach
-  c.outPorts[type].on 'attach', compute
-
   # If any property of object is array, expand to a collection and fill rest
   expandToArray = options.expandToArray || (props) ->
     length = 0
@@ -72,7 +68,7 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
             obj[name] = prop
         arr.push obj
       return arr
-      
+
   c.expandToArray = expandToArray
 
   # Set up in ports
