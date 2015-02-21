@@ -10,9 +10,6 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
     datatype: 'object'
     type: "noflo-canvas/#{type}"
 
-  # Autosend on attach
-  c.outPorts[type].on 'attach', c.compute.bind(c)
-
   setProperty = (name, data) -> # this is bound, so use -> not =>
     props[name] = data
     compute(props)
@@ -34,6 +31,10 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
       out = expandToArray out
       if out
         c.outPorts[type].send out
+
+  # FIXME this it kinda whack
+  # Autosend on attach
+  c.outPorts[type].on 'attach', compute
 
   # If any property of object is array, expand to a collection and fill rest
   expandToArray = options.expandToArray || (props) ->
@@ -78,11 +79,11 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
       # Set up empty array
       props[name] = []
       # Handle data
-      c.inPorts[name].on 'data', c.setPropertyIndexed.bind(c, name)
+      c.inPorts[name].on 'data', setPropertyIndexed.bind(c, name)
     else
       # Copy defaults
       if port.value? or port.required isnt false
         props[name] = port.value
       # Handle data
-      c.inPorts[name].on 'data', c.setProperty.bind(c, name)
+      c.inPorts[name].on 'data', setProperty.bind(c, name)
       # TODO remove prop / reindex arrays on detach
