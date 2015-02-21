@@ -11,9 +11,8 @@
   "remotes": [
     "https://raw.githubusercontent.com"
   ],
-  "main": "index.js",
+  "main": "lib/ArrayableHelper.coffee",
   "scripts": [
-    "index.js",
     "lib/ArrayableHelper.coffee"
   ]
 }
