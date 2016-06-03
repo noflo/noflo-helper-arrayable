@@ -3,7 +3,7 @@
   "description": "noflo-canvas and noflo-motion use similar semantics, where component can make one or many",
   "author": "Forrest Oliphant <http://forresto.com/>",
   "repository": "noflo/noflo-helper-arrayable",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*"
