@@ -1,3 +1,11 @@
 language: node_js
 node_js:
-  - "0.12"
+- 4.2
+deploy:
+  provider: npm
+  email: vilson@void.cc
+  api_key:
+    secure: PRThSyGd1W22LvFjNJVj9VaatQm7yxKiuf9eKXBTnilIS47IedoPNa4vets1WsYD74RUxnwRyB7ELUPzKTYtoRhvp/1LJ/sucCsM5J8p4yFyYUvQMb5RUqjd6A2K29SU2wJkWtLKsIhjusW5TxnA2tH0W8p48BoeWxYglnVCB4E=
+  on:
+    tags: true
+    repo: noflo/noflo-helper-arrayable
