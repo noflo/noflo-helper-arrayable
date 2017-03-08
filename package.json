@@ -4,7 +4,7 @@
   "description": "Components that accept one item or array and produce one item or array",
   "main": "lib/ArrayableHelper.coffee",
   "scripts": {
-    "test": "mocha test/* --compilers coffee:coffee-script/register"
+    "test": "mocha spec/* --compilers coffee:coffee-script/register"
   },
   "repository": {
     "type": "git",
