@@ -5,8 +5,7 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   props = {type}
   c.inPorts = new noflo.InPorts ports
   c.outPorts = new noflo.OutPorts()
-  c.outPorts[type] = new noflo.OutPort
-    name: type
+  c.outPorts.add type,
     datatype: 'object'
     type: "noflo-canvas/#{type}"
 
