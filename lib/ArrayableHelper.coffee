@@ -27,17 +27,17 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
 
   setProperty = (props, name, data, output) -> # this is bound, so use -> not =>
     props[name] = data
-    result = compute(props)
+    result = compute.bind(component) props
     return unless result
     output.send result
 
   setPropertyIndexed = (props, name, data, i, output) ->
     props[name][i] = data
-    result = compute(props)
+    result = compute.bind(component) props
     return unless result
     output.send result
 
-  compute = options.compute || (props) ->
+  compute = options.compute || component.compute || (props) ->
     out = {}
     for own name, prop of props
       # Flatten array port if needed
