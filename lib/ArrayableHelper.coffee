@@ -2,34 +2,52 @@ noflo = require 'noflo'
 
 module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   c = component
-  props = {type}
   c.inPorts = new noflo.InPorts ports
   c.outPorts = new noflo.OutPorts()
   c.outPorts.add type,
     datatype: 'object'
-    type: "noflo-canvas/#{type}"
+  c.props = {}
+  c.tearDown = (callback) ->
+    props = {}
+    do callback
 
-  setProperty = (name, data) -> # this is bound, so use -> not =>
+  c.forwardBrackets = {}
+
+  prepareProps = ->
+    props = {type}
+    # Copy defaults
+    for own name, port of ports
+      if port.addressable is true
+        # Set up empty array
+        props[name] = []
+        continue
+      if port.value? or port.required isnt false
+        props[name] = port.value
+    return props
+
+  setProperty = (props, name, data, output) -> # this is bound, so use -> not =>
     props[name] = data
-    compute(props)
+    result = compute(props)
+    return unless result
+    output.send result
 
-  setPropertyIndexed = (name, data, i) -> # this is bound, so use -> not =>
+  setPropertyIndexed = (props, name, data, i, output) ->
     props[name][i] = data
-    compute(props)
+    result = compute(props)
+    return unless result
+    output.send result
 
   compute = options.compute || (props) ->
-    if c.outPorts[type].isAttached()
-      out = {}
-      for own name, prop of props
-        # Flatten array port if needed
-        if c.inPorts[name]? and c.inPorts[name].options.addressable
-          out[name] = expandToArray prop
-        else
-          out[name] = prop
-      # Flatten output if needed
-      out = expandToArray out
-      if out
-        c.outPorts[type].send out
+    out = {}
+    for own name, prop of props
+      # Flatten array port if needed
+      if c.inPorts[name]? and c.inPorts[name].options.addressable
+        out[name] = expandToArray prop
+      else
+        out[name] = prop
+    # Flatten output if needed
+    out = expandToArray out
+    return out
 
   # If any property of object is array, expand to a collection and fill rest
   expandToArray = options.expandToArray || (props) ->
@@ -70,17 +88,25 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
 
   c.expandToArray = expandToArray
 
-  # Set up in ports
-  for own name, port of ports
-    if port.addressable is true
-      # Set up empty array
-      props[name] = []
-      # Handle data
-      c.inPorts[name].on 'data', setPropertyIndexed.bind(c, name)
-    else
-      # Copy defaults
-      if port.value? or port.required isnt false
-        props[name] = port.value
-      # Handle data
-      c.inPorts[name].on 'data', setProperty.bind(c, name)
-      # TODO remove prop / reindex arrays on detach
+  c.process (input, output) ->
+    unless c.props[input.scope]
+      c.props[input.scope] = prepareProps()
+    props = c.props[input.scope]
+
+    Object.keys(ports).forEach (name) ->
+      port = ports[name]
+      if port.addressable is true
+        # Handle data
+        indexesWithData = input.attached(name).filter (idx) ->
+          input.hasData [name, idx]
+        return unless indexesWithData.length
+        for idx in indexesWithData
+          data = input.getData [name, idx]
+          setPropertyIndexed props, name, data, idx, output
+        return
+      return unless input.hasData name
+      data = input.getData name
+      setProperty props, name, data, output
+      return
+    output.done()
+    return
