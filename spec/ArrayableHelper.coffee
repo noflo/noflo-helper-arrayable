@@ -6,7 +6,7 @@ noflo = require 'noflo'
 
 describe 'ArrayableHelper noflo helper', ->
   it 'should be a function', ->
-    chai.expect(ArrayableHelper).to.be.a.function
+    chai.expect(ArrayableHelper).to.be.a 'function'
   describe 'With a NoFlo component', ->
     c = null
     it 'should be instantiable', (done) ->
