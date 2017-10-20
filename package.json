@@ -1,6 +1,6 @@
 {
   "name": "noflo-helper-arrayable",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Components that accept one item or array and produce one item or array",
   "main": "lib/ArrayableHelper.coffee",
   "scripts": {
