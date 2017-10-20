@@ -8,27 +8,47 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   c.outPorts.add type,
     datatype: 'object'
 
-  setProperty = (name, data) -> # this is bound, so use -> not =>
-    props[name] = data
-    compute(props)
+  c.tearDown = (callback) ->
+    # Clear the state
+    props = {type}
+    do copyDefaults
+    do callback
 
-  setPropertyIndexed = (name, data, i) -> # this is bound, so use -> not =>
+  c.forwardBrackets = {}
+
+  copyDefaults = ->
+    # Copy defaults
+    for own name, port of ports
+      if port.addressable is true
+        # Set up empty array
+        props[name] = []
+        continue
+      if port.value? or port.required isnt false
+        props[name] = port.value
+
+  setProperty = (name, data, output) -> # this is bound, so use -> not =>
+    props[name] = data
+    result = compute(props)
+    return unless result
+    output.send result
+
+  setPropertyIndexed = (name, data, i, output) ->
     props[name][i] = data
-    compute(props)
+    result = compute(props)
+    return unless result
+    output.send result
 
   compute = options.compute || (props) ->
-    if c.outPorts[type].isAttached()
-      out = {}
-      for own name, prop of props
-        # Flatten array port if needed
-        if c.inPorts[name]? and c.inPorts[name].options.addressable
-          out[name] = expandToArray prop
-        else
-          out[name] = prop
-      # Flatten output if needed
-      out = expandToArray out
-      if out
-        c.outPorts[type].send out
+    out = {}
+    for own name, prop of props
+      # Flatten array port if needed
+      if c.inPorts[name]? and c.inPorts[name].options.addressable
+        out[name] = expandToArray prop
+      else
+        out[name] = prop
+    # Flatten output if needed
+    out = expandToArray out
+    return out
 
   # If any property of object is array, expand to a collection and fill rest
   expandToArray = options.expandToArray || (props) ->
@@ -69,17 +89,20 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
 
   c.expandToArray = expandToArray
 
-  # Set up in ports
-  for own name, port of ports
-    if port.addressable is true
-      # Set up empty array
-      props[name] = []
-      # Handle data
-      c.inPorts[name].on 'data', setPropertyIndexed.bind(c, name)
-    else
-      # Copy defaults
-      if port.value? or port.required isnt false
-        props[name] = port.value
-      # Handle data
-      c.inPorts[name].on 'data', setProperty.bind(c, name)
-      # TODO remove prop / reindex arrays on detach
+  do copyDefaults
+  c.process (input, output) ->
+    Object.keys(ports).forEach (name) ->
+      port = ports[name]
+      if port.addressable is true
+        # Handle data
+        indexesWithData = input.attached(name).filter (idx) ->
+          input.hasData [name, idx]
+        return unless indexesWithData.length
+        for idx in indexesWithData
+          setPropertyIndexed name, input.getData([name, idx]), idx, output
+        return
+      return unless input.hasData name
+      setProperty name, input.getData(name), output
+      return
+    output.done()
+    return
