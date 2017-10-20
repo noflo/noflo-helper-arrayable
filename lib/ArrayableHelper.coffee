@@ -2,21 +2,19 @@ noflo = require 'noflo'
 
 module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   c = component
-  props = {type}
   c.inPorts = new noflo.InPorts ports
   c.outPorts = new noflo.OutPorts()
   c.outPorts.add type,
     datatype: 'object'
-
+  c.props = {}
   c.tearDown = (callback) ->
-    # Clear the state
-    props = {type}
-    do copyDefaults
+    props = {}
     do callback
 
   c.forwardBrackets = {}
 
-  copyDefaults = ->
+  prepareProps = ->
+    props = {type}
     # Copy defaults
     for own name, port of ports
       if port.addressable is true
@@ -25,14 +23,15 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
         continue
       if port.value? or port.required isnt false
         props[name] = port.value
+    return props
 
-  setProperty = (name, data, output) -> # this is bound, so use -> not =>
+  setProperty = (props, name, data, output) -> # this is bound, so use -> not =>
     props[name] = data
     result = compute(props)
     return unless result
     output.send result
 
-  setPropertyIndexed = (name, data, i, output) ->
+  setPropertyIndexed = (props, name, data, i, output) ->
     props[name][i] = data
     result = compute(props)
     return unless result
@@ -89,8 +88,11 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
 
   c.expandToArray = expandToArray
 
-  do copyDefaults
   c.process (input, output) ->
+    unless c.props[input.scope]
+      c.props[input.scope] = prepareProps()
+    props = c.props[input.scope]
+
     Object.keys(ports).forEach (name) ->
       port = ports[name]
       if port.addressable is true
@@ -99,10 +101,12 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
           input.hasData [name, idx]
         return unless indexesWithData.length
         for idx in indexesWithData
-          setPropertyIndexed name, input.getData([name, idx]), idx, output
+          data = input.getData [name, idx]
+          setPropertyIndexed props, name, data, idx, output
         return
       return unless input.hasData name
-      setProperty name, input.getData(name), output
+      data = input.getData name
+      setProperty props, name, data, output
       return
     output.done()
     return
