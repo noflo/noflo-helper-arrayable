@@ -7,7 +7,6 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   c.outPorts = new noflo.OutPorts()
   c.outPorts.add type,
     datatype: 'object'
-    type: "noflo-canvas/#{type}"
 
   setProperty = (name, data) -> # this is bound, so use -> not =>
     props[name] = data
