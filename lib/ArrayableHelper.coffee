@@ -1,5 +1,12 @@
 noflo = require 'noflo'
 
+# Generates an unique ID 
+# (http://coffeescriptcookbook.com/chapters/strings/generating-a-unique-id)
+uniqueId = (length=8) ->
+  id = ""
+  id += Math.random().toString(36).substr(2) while id.length < length
+  id.substr 0, length
+
 module.exports = ArrayableHelper = (component, type, ports, options={}) ->
   c = component
   c.inPorts = new noflo.InPorts ports
@@ -15,6 +22,7 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
 
   prepareProps = ->
     props = {type}
+    props.id = uniqueId()
     # Copy defaults
     for own name, port of ports
       if port.addressable is true
@@ -75,6 +83,7 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
         else
           obj = {}
           obj.type = props.type
+          obj.id = props.id
         keys = Object.keys(props)
         for name in keys
           prop = props[name]
