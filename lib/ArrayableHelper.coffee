@@ -1,6 +1,6 @@
 noflo = require 'noflo'
 
-# Generates an unique ID 
+# Generates an unique ID
 # (http://coffeescriptcookbook.com/chapters/strings/generating-a-unique-id)
 uniqueId = (length=8) ->
   id = ""
@@ -64,7 +64,7 @@ module.exports = ArrayableHelper = (component, type, ports, options={}) ->
     for name in keys
       prop = props[name]
       # Short circuit with empty prop
-      return null unless prop? 
+      return null unless prop?
       # See if any prop is an array
       if prop instanceof Array
         # Short circuit with empty array
