@@ -4,6 +4,7 @@
   "description": "Components that accept one item or array and produce one item or array",
   "main": "lib/ArrayableHelper.coffee",
   "scripts": {
+    "pretest": "./node_modules/.bin/coffeelint -r lib",
     "test": "mocha spec/*.coffee --require coffeescript/register"
   },
   "repository": {
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "chai": "^4.0.0",
+    "coffeelint": "^2.0.7",
     "coffeescript": "^2.0.2",
     "mocha": "^4.0.0"
   }
