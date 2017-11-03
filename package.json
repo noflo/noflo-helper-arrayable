@@ -4,7 +4,7 @@
   "description": "Components that accept one item or array and produce one item or array",
   "main": "lib/ArrayableHelper.coffee",
   "scripts": {
-    "test": "mocha spec/* --compilers coffee:coffee-script/register"
+    "test": "mocha spec/*.coffee --require coffeescript/register"
   },
   "repository": {
     "type": "git",
@@ -21,11 +21,11 @@
   },
   "homepage": "https://github.com/noflo/noflo-helper-arrayable",
   "dependencies": {
-    "noflo": "1.0.0"
+    "noflo": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.0.0",
-    "mocha": "^4.0.0",
-    "coffee-script": "^1.9.1"
+    "coffeescript": "^2.0.2",
+    "mocha": "^4.0.0"
   }
 }
