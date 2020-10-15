@@ -2,10 +2,10 @@
   "name": "noflo-helper-arrayable",
   "version": "0.2.0",
   "description": "Components that accept one item or array and produce one item or array",
-  "main": "lib/ArrayableHelper.coffee",
+  "main": "lib/ArrayableHelper.js",
   "scripts": {
-    "pretest": "./node_modules/.bin/coffeelint -r lib",
-    "test": "mocha spec/*.coffee --require coffeescript/register"
+    "pretest": "eslint lib/*.js spec/*.js spec/**/*.js",
+    "test": "mocha spec/*.js"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,15 @@
   },
   "homepage": "https://github.com/noflo/noflo-helper-arrayable",
   "dependencies": {
-    "coffeescript": "^2.0.2",
     "noflo": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^4.0.0",
-    "coffeelint": "^2.0.7",
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-chai": "0.0.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-mocha": "^8.0.0",
     "mocha": "^8.1.3"
   }
 }
